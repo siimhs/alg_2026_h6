@@ -1,60 +1,97 @@
-# README #
+# Homework 6
 
-This repository is read-only, make a private fork in the bitbucket server
-for your own files. Clone this forked repository to your local computer and solve the task.
+This project is configured to work offline using local libraries in the `lib/` directory. All code resides in the default package.
 
-See on kuuenda kodutöö failide hoidla, mida saab kasutada ainult algseks lugemiseks.
-Töötamiseks looge endale isiklik repositoorium, näiteks privaatne 'fork' bitbucket serverisse, millest saate luua klooni oma arvutisse.
-
-## Command line examples. Näidete kasutamine käsurealt ##
-#### Compilation. Kompileerimine: ####
+## 📂 Project Structure
 
 ```
-#!bash
-
-javac -cp src src/GraphTask.java
+h6/
+├── src/main/java/       # Application source code
+│   └── GraphTask.java
+├── src/test/java/       # Test code
+│   ├── GraphTaskTest.java
+│   └── Aout.java        # Test helper utilities
+├── lib/                 # Local libraries
+│   ├── junit-4.13.2.jar
+│   └── hamcrest-core-1.3.jar
+├── bin/                 # Compiled class files
+└──
 ```
 
-#### Execution. Käivitamine: ####
+## 🛠️ Command Line Instructions
 
-```
-#!bash
+Since the project uses the default package and local JAR files, commands differ by operating system (path separator: Windows `;` vs Linux/Mac `:`).
 
-java -cp src GraphTask
-```
+### Windows (Command Prompt / PowerShell)
 
+```bash
+# 1. Compile main code
+javac -d bin src/main/java/*.java
 
-### Usage of tests. Testide kasutamine ###
-#### Compilation of a test. Testi kompileerimine: ####
+# 2. Compile tests (requires lib folder and main code in bin)
+javac -d bin -cp "lib/*;bin" src/test/java/*.java
 
-```
-#!bash
+# 3. Run application
+java -cp bin GraphTask
 
-javac -encoding utf8 -cp 'src:test:test/junit-4.13.2.jar:test/hamcrest-core-1.3.jar' test/GraphTaskTest.java
-
-```
-In Windows replace colons by semicolons. Sama Windows aknas (koolonite asemel peavad olema semikoolonid):
-
-```
-#!bash
-
-javac -encoding utf8 -cp 'src;test;test/junit-4.13.2.jar;test/hamcrest-core-1.3.jar' test/GraphTaskTest.java
-
-
+# 4. Run JUnit tests
+java -cp "bin;lib/*" org.junit.runner.JUnitCore GraphTaskTest
 ```
 
-#### Running a test. Testi käivitamine: ####
+### Linux and macOS
 
+```bash
+# 1. Compile main code
+javac -d bin src/main/java/*.java
+
+# 2. Compile tests (requires lib folder and main code in bin)
+javac -d bin -cp "lib/*:bin" src/test/java/*.java
+
+# 3. Run application
+java -cp bin GraphTask
+
+# 4. Run JUnit tests
+java -cp "bin:lib/*" org.junit.runner.JUnitCore GraphTaskTest
 ```
-#!bash
 
-java -cp 'src:test:test/junit-4.13.2.jar:test/hamcrest-core-1.3.jar' org.junit.runner.JUnitCore GraphTaskTest
-```
+---
 
-The same for Windows. Sama Windows aknas (koolonite asemel semikoolonid):
+## 📋 Task Description
 
-```
-#!bash
+Graph problems are individual for each student and junit-testing is therefore impossible.
+ You find here the compulsory structure description (classes Graph, Vertex and Arc)
+ to present graphs. To receive a task you have to contact the instructor (problems are
+ in different books and you must choose one, it is not possible to make all problems
+ available electronically).
+Make sure that:
+1. The program is based on a given template (classes GraphTask, Graph, Vertex, Arc, ...).
+ Result of the program must be a computer processable object (list of arcs, list of vertices,
+ graph with modified info fields, matrix, etc.) which could be processed further, not only
+ a printout. For example, the path must be a list of arcs (List <Arc>, not String).
+2. If the problem requires an undirected graph, then each edge AB of it is represented
+ by two opposite arcs AB and BA.
+3. The program has been successfully tested with at least five examples, incl. example of
+ a graph with 2000+ vertices (only measure the execution time). No junit tests are required.
+4. The program code is documented using javadoc.
 
-java -cp 'src;test;test/junit-4.13.2.jar;test/hamcrest-core-1.3.jar' org.junit.runner.JUnitCore GraphTaskTest
-```
+
+Graafi ülesanne on igal inimesel individuaalne ning selle õigsust automaattestid kontrollida
+ ei saa. See kood on kohustusliku viidastruktuuri kirjeldamiseks (klassid Graph, Vertex ja Arc).
+ Ülesannete valik on laiali erinevates raamatutes ning kahjuks neti kaudu endale ülesannet
+ valida ei saa - tuleb vahetult kontakteeruda õppejõuga.
+Kontrollige, et:
+1. Programm põhineb etteantud aluspõhjal (klassid GraphTask, Graph, Vertex, Arc, ...).
+ Programmi töö tulemuseks on masintöödeldav objekt (kaarte list, tippude list, muudetud
+ infoväljadega graaf, maatriks vms), mida saaks edasi kasutada, mitte ainult väljatrükk.
+ Näiteks tee graafis (path) peab olema kaarte list (List<Arc>, mitte String).
+2. Kui ülesandes on vaja orienteerimata graafi, siis selle iga serv AB on esitatud kahe
+ vastassuunalise kaare AB ja BA abil.
+3. Programmi on edukalt proovitud vähemalt viie näitega, kindlasti ka 2000+ tipuga graafi
+ näide (mille puhul mõõta ainult lahendusaeg).
+4. Programmi kood on dokumenteeritud javadoc nõuete järgi.
+
+---
+
+## ⚙️ Requirements
+
+- **Java 8** or higher
