@@ -118,8 +118,9 @@
 \chapter*{Sissejuhatus}
 \addcontentsline{toc}{chapter}{Sissejuhatus}
 
-Siinsest aruandest on võimalik mõista kuidas ühistranspordivõrgus marsruute leida, kus ümberistumisi on võimalikult vähe.
-Olen aruannet kirjutades mõelnud lugejale kes ei ole aine kursust läbinud.
+Ühistranspordis eelistavad paljud sõitjad pikemat marsruuti, kui sellel
+tuleb vähem kordi ümber istuda. Aruanne kirjeldab, kuidas leida
+ühistranspordivõrgus marsruut, kus ümberistumisi on võimalikult vähe.
 
 % =====================================================================
 %  1. ÜLESANDE PÜSTITUS
@@ -128,12 +129,16 @@ Olen aruannet kirjutades mõelnud lugejale kes ei ole aine kursust läbinud.
 \label{ch:pustitus}
 
 \section{Ülesande sõnastus}
+\label{sec:sonastus}
 On antud suunatud graaf, mille tipud tähistavad peatusi ja kaared tähistavad ühendusi kahe peatuse vahel.
 Iga kaare infoväljas on liini tähis, mis seda ühendust teenindab (kahe peatuse vahel võib olla mitu kaart eri liinidega).
-Koostada meetod, mis leiab etteantud lähtepeatusest sihtpeatusesse marsruudi, kus liini vahetusi (ümberistumisi) on võimalikult vähe.
+Koostada meetod, mis leiab etteantud lähtepeatusest sihtpeatusesse marsruudi, kus liinivahetusi (ümberistumisi) on võimalikult vähe.
 Kui selliseid marsruute on mitu, valitakse neist kõige vähemate kaartega.
 Meetod tagastab marsruudi kaarte listina (List) läbimise järjekorras.
-Kui sihtpeatusesse ei saa jõuda, tagastatakse tühi list.
+Kui sihtpeatusesse ei saa jõuda või lähte- ja sihtpeatus on sama peatus,
+tagastatakse tühi list.
+Kui lähte- või sihtpeatus on puudu (\code{null}), visatakse erind
+\code{IllegalArgumentException}.
 Algset graafi ei muudeta.
 
 \section{Põhimõisted}
@@ -141,14 +146,17 @@ Algset graafi ei muudeta.
 Mõiste järel on toodud ingliskeelne termin ja nimi, millega sama asi programmikoodis esineb.
 
 \begin{itemize}
-  \item \textbf{Graaf} (koodis \code{Graph}) -- Tipud ja nende vahelised ühendused ehk kaared. Antud töös näeme graafi kui ühistranspordi võrgustikku kus on peatused (tipud) ja ühendused (kaared).
-  \item \textbf{Suunatud graaf} -- Suunatud graafis teame tipust olevaid ühendusi ja nende suunda (näiteks kas buss sõidab peatuse A-st peatuse B-sse või vastupidi).
-  \item \textbf{Tipp (peatus)} (koodis \code{Vertex}) -- Tipp märgib peatust. Päris elus on peatused mõlemal pool teed või on neid suuremas ristmikus rohkem (näiteks peatus ``Vabaduse väljak''). Antud töös on üks tipp = üks peatus = näiteks ``Vabaduse väljak''.
-  \item \textbf{Kaar (ühendus)} (koodis \code{Arc}) -- Peatusest väljuv ühendus teise peatusse. 1 kaar = 1 liin = 1 buss, tramm või troll. Kaare infoväljas on liini tähis (nt "1", "2", "3" jne).
+  \item \textbf{Graaf} (koodis \code{Graph}) -- Tipud ja nende vahelised ühendused ehk kaared. Selles töös näeme graafi kui ühistranspordi võrgustikku, kus on peatused (tipud) ja ühendused (kaared).
+  \item \textbf{Suunatud graaf} -- Graaf, mille igal kaarel on suund: kaar algab ühest tipust ja lõpeb teises. Kaar A~$\to$~B tähendab, et peatusest A saab sõita peatusse B, kuid see ei tähenda, et peatusest B saaks sõita peatusse A. Kui liin sõidab mõlemas suunas, on graafis kaks eraldi kaart: A~$\to$~B ja B~$\to$~A.
+  \item \textbf{Tipp (peatus)} (koodis \code{Vertex}) -- Tipp märgib peatust. Päris elus on peatused mõlemal pool teed või on neid suuremal ristmikul rohkem (näiteks peatus ``Vabaduse väljak''). Selles töös on üks tipp = üks peatus = näiteks ``Vabaduse väljak''.
+  \item \textbf{Kaar (ühendus)} (koodis \code{Arc}) -- Peatusest väljuv ühendus teise peatusse. 1 kaar = 1 liin = 1 buss, tramm või troll. Kaare infoväljas on liini tähis (nt ``1'', ``2'', ``3'' jne).
   \item \textbf{Liin (liini tähis)} (koodis kaare väli \code{line}) -- Kaares on viide liinile, mis seda ühendust teenindab. 1 kaar = 1 liin. Kahe peatuse vahel võib olla mitu eri liiniga kaart.
   \item \textbf{Lähtepeatus} (koodis parameeter \code{from}) -- Sisend, kust marsruut algab.
-  \item \textbf{Sihtpeatus} (koodis parameeter \code{to}) -- Sisend, kuhu marsruut lõpeb.
-  \item \textbf{Marsruut} (koodis \code{List<Arc>}) -- Väljund, kaarte näol lähtepeatusest sihtpeatusesse.
+  \item \textbf{Sihtpeatus} (koodis parameeter \code{to}) -- Sisend, kus marsruut lõpeb.
+  \item \textbf{Marsruut} (koodis \code{List<Arc>}) -- Väljund: kaarte list, mis viib lähtepeatusest sihtpeatusesse.
+  \item \textbf{Ümberistumine} (ingl \emph{transfer}, koodis loendab neid meetod \code{countTransfers}) -- Marsruudi kahel järjestikusel kaarel on erinev liini tähis, st sõitja peab vahepeatuses vahetama liini. Esimesele liinile minek marsruudi alguses ei ole ümberistumine, seega ühe liiniga marsruudil on 0 ümberistumist.
+  \item \textbf{Olek} (ingl \emph{state}, koodis klass \code{State}) -- Paar (peatus, liin, millega sinna peatusesse jõuti). Lähtepeatuse olekus liini veel ei ole. Sama peatus võib otsingus esineda mitmes olekus, kui sinna jõutakse eri liinidega.
+  \item \textbf{Prioriteedijärjekord} (ingl \emph{priority queue}, koodis \code{PriorityQueue}) -- Järjekord, kuhu saab elemente lisada mis tahes järjekorras, kuid mis annab välja alati kõige väiksema võtmega elemendi. Selles töös on võtmeks ümberistumiste arv ja viigi korral kaarte arv.
 \end{itemize}
 
 % =====================================================================
@@ -161,7 +169,7 @@ Mõiste järel on toodud ingliskeelne termin ja nimi, millega sama asi programmi
 \code{GraphTask}, mille sees on abiklassid \code{Graph}, \code{Vertex} ja
 \code{Arc} (graaf, tipp ja kaar) ning otsingu jaoks vajalikud abiklassid.
 Lahendus ei ole pakendatud teegiks: selle kasutamiseks tuleb vajalikud
-klassid ja meetodid kopeerida oma projekti. Kasutamise juhend on
+klassid ja meetodid kopeerida oma projekti. Kasutamisjuhend on
 jaotises~\ref{sec:kasutamine}.
 
 Ülesande püstituses soovitud otsing on realiseeritud klassi
@@ -303,9 +311,9 @@ List<GraphTask.Arc> route = g.findFewestTransfersRoute (a, c);
 int transfers = GraphTask.countTransfers (route);   // 0
 \end{lstlisting}
 
-Kui sihtpeatusesse ei saa jõuda või lähte- ja sihtpeatus on sama peatus,
-tagastab meetod tühja listi. Kui lähte- või sihtpeatus on \code{null},
-visatakse erind \code{IllegalArgumentException}.
+Erijuhtudel (sihtpeatusesse ei saa jõuda, lähte- ja sihtpeatus on sama
+või üks neist on \code{null}) käitub meetod nii, nagu on kirjeldatud
+jaotises~\ref{sec:sonastus}.
 
 % =====================================================================
 %  4. TESTIMISKAVA
@@ -345,10 +353,10 @@ jaotises~\ref{sec:kaivitamine}.
 % =====================================================================
 \chapter*{Kokkuvõte}
 \addcontentsline{toc}{chapter}{Kokkuvõte}
-Koostasin töö käigus \code{findFewestTransfersRoute} meetodi, mis leiab ühistranspordivõrgus marsruudi, kus ümberistumisi on võimalikult vähe.
-Leian, et jätkutööna on vaja see pakendada, et võimaldada paremat kasutusele võttu.
-Samuti pean oluliseks jätkuks kujundada mõisted transpordivõrgustiku semantika järgi.
-Kokkuvõttes olen tööga rahul.
+Töö tulemusena valmis meetod \code{findFewestTransfersRoute}, mis leiab
+ühistranspordivõrgus vähimate ümberistumistega marsruudi. Jätkutööna tuleks
+lahendus pakendada teegiks ja nimetada mõisted ümber transpordivõrgu
+terminite järgi.
 
 % =====================================================================
 %  LISAD
@@ -364,5 +372,9 @@ Kokkuvõttes olen tööga rahul.
 \chapter{JUnit testid}
 \label{app:testid}
 \lstinputlisting[caption={GraphTaskTest.java}]{../src/test/java/GraphTaskTest.java}
+
+\chapter{Testide abiklass}
+\label{app:aout}
+\lstinputlisting[caption={Aout.java}]{../src/test/java/Aout.java}
 
 \end{document}
