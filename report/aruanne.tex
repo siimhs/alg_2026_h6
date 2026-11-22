@@ -131,7 +131,6 @@ tuleb vähem kordi ümber istuda. Aruanne kirjeldab, kuidas leida
 \label{ch:pustitus}
 
 \section{Ülesande sõnastus}
-\label{sec:sonastus}
 On antud suunatud graaf, mille tipud tähistavad peatusi ja kaared tähistavad ühendusi kahe peatuse vahel.
 Iga kaare infoväljas on liini tähis, mis seda ühendust teenindab (kahe peatuse vahel võib olla mitu kaart eri liinidega).
 Koostada meetod, mis leiab etteantud lähtepeatusest sihtpeatusesse marsruudi, kus liinivahetusi (ümberistumisi) on võimalikult vähe.
@@ -172,8 +171,7 @@ Algset graafi ei muudeta.
 Klasside \code{GraphTask}, \code{Graph}, \code{Vertex} ja \code{Arc}
 põhi pärineb kodutöö ülesande lehelt~\cite{kodutoo6}.
 Lahendus ei ole pakendatud teegiks: selle kasutamiseks tuleb vajalikud
-klassid ja meetodid kopeerida oma projekti. Kasutamisjuhend on
-jaotises~\ref{sec:kasutamine}.
+klassid ja meetodid kopeerida oma projekti.
 
 Ülesande püstituses soovitud otsing on realiseeritud klassi
 \code{GraphTask.Graph} meetodis \code{findFewestTransfersRoute}.
@@ -244,13 +242,12 @@ h6/
 \end{lstlisting}
 
 \section{Kompileerimine ja käivitamine}
-\label{sec:kaivitamine}
 
-Käsud käivitatakse projekti juurkaustas (\code{h6/}). Kompileerimine ei
-trüki midagi, kui vigu pole. Programmi käivitamisel lahendatakse
+Käsud käivitatakse projekti juurkaustas (\code{h6/}). Programmi käivitamisel lahendatakse
 mitu näiteülesannet ja trükitakse iga näite kohta graaf ning leitud
 marsruut. Allpool on väljundist näidatud esimene
-näide ja viimane rida, ülejäänu on asendatud märgiga \code{[...]}.
+näide ja viimane rida, ülejäänu on asendatud märgiga \code{[...]}; sama
+märgiga on asendatud ka testide käigus uuesti trükitud väljund.
 
 \begin{lstlisting}[language={},numbers=none,caption={Programmi kompileerimine ja käivitamine}]
 $ javac -encoding UTF-8 -d bin src/main/java/*.java
@@ -270,7 +267,7 @@ Large graph: 2500 stops, 8700 arcs, route of 5 arcs with 2 transfers found in 44
 
 Testid kompileeritakse koos kaustas \code{lib/} olevate teekidega. Kuna
 üks test käivitab ka meetodi \code{main}, trükitakse testide käigus sama
-väljund uuesti; see on allpool asendatud märgiga \code{[...]}.
+väljund uuesti.
 
 \begin{lstlisting}[language={},numbers=none,caption={Testide kompileerimine ja käivitamine}]
 $ javac -encoding UTF-8 -d bin -cp "lib/*:bin" src/test/java/*.java
@@ -286,7 +283,6 @@ OK (13 tests)
 \end{lstlisting}
 
 \section{Meetodi kasutamine oma programmis}
-\label{sec:kasutamine}
 
 Kõigepealt luuakse graaf, seejärel lisatakse sellele peatused
 (\code{createVertex}) ja peatuste vahelised ühendused (\code{createArc}).
@@ -312,10 +308,6 @@ g.createArc ("aA_C_2", a, c, "2");   // liin 2: A -> C
 List<GraphTask.Arc> route = g.findFewestTransfersRoute (a, c);
 int transfers = GraphTask.countTransfers (route);   // 0
 \end{lstlisting}
-
-Erijuhtudel (sihtpeatusesse ei saa jõuda, lähte- ja sihtpeatus on sama
-või üks neist on \code{null}) käitub meetod nii, nagu on kirjeldatud
-jaotises~\ref{sec:sonastus}.
 
 % =====================================================================
 %  4. TESTIMISKAVA
@@ -347,8 +339,6 @@ testis 3000 peatust) mõõdetakse otsingu aega.
 Kõik 13 JUnit testi lõpevad edukalt. Testide täielik kood on toodud
 lisas~\ref{app:testid}, kusjuures iga testi oodatav tulemus on kirjas
 testi kontrolllausetes (\code{assertEquals}, \code{assertTrue} jne).
-Testide kompileerimise ja käivitamise käsud on toodud
-jaotises~\ref{sec:kaivitamine}.
 
 % =====================================================================
 %  KOKKUVÕTE
