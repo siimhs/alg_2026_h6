@@ -146,17 +146,12 @@ Algset graafi ei muudeta.
 \label{sec:moisted}
 
 \begin{itemize}
-  \item \textbf{Graaf} (koodis \code{Graph}) -- Tipud ja nende vahelised ühendused ehk kaared. Selles töös näeme graafi kui ühistranspordi võrgustikku, kus on peatused (tipud) ja ühendused (kaared).
-  \item \textbf{Suunatud graaf} -- Graaf, mille igal kaarel on suund: kaar algab ühest tipust ja lõpeb teises. Kaar A~$\to$~B tähendab, et peatusest A saab sõita peatusse B, kuid see ei tähenda, et peatusest B saaks sõita peatusse A. Kui liin sõidab mõlemas suunas, on graafis kaks eraldi kaart: A~$\to$~B ja B~$\to$~A.
-  \item \textbf{Tipp (peatus)} (koodis \code{Vertex}) -- Tipp märgib peatust. Päris elus on peatused mõlemal pool teed või on neid suuremal ristmikul rohkem (näiteks peatus ``Vabaduse väljak''). Selles töös on üks tipp = üks peatus = näiteks ``Vabaduse väljak''.
-  \item \textbf{Kaar (ühendus)} (koodis \code{Arc}) -- Peatusest väljuv ühendus teise peatusse. 1 kaar = 1 liin = 1 buss, tramm või troll. Kaare infoväljas on liini tähis (nt ``1'', ``2'', ``3'' jne).
-  \item \textbf{Liin (liini tähis)} (koodis kaare väli \code{line}) -- Kaares on viide liinile, mis seda ühendust teenindab. 1 kaar = 1 liin. Kahe peatuse vahel võib olla mitu eri liiniga kaart.
-  \item \textbf{Lähtepeatus} (koodis parameeter \code{from}) -- Sisend, kust marsruut algab.
-  \item \textbf{Sihtpeatus} (koodis parameeter \code{to}) -- Sisend, kus marsruut lõpeb.
-  \item \textbf{Marsruut} (koodis \code{List<Arc>}) -- Väljund: kaarte list, mis viib lähtepeatusest sihtpeatusesse.
-  \item \textbf{Ümberistumine} (koodis loendab neid meetod \code{countTransfers}) -- Marsruudi kahel järjestikusel kaarel on erinev liini tähis, st sõitja peab vahepeatuses vahetama liini. Esimesele liinile minek marsruudi alguses ei ole ümberistumine, seega ühe liiniga marsruudil on 0 ümberistumist.
-  \item \textbf{Olek} (koodis klass \code{State}) -- Paar (peatus, liin, millega sinna peatusesse jõuti). Lähtepeatuse olekus liini veel ei ole. Sama peatus võib otsingus esineda mitmes olekus, kui sinna jõutakse eri liinidega.
-  \item \textbf{Prioriteedijärjekord} (koodis \code{PriorityQueue}) -- Järjekord, kuhu saab elemente lisada mis tahes järjekorras, kuid mis annab välja alati kõige väiksema võtmega elemendi. Selles töös on võtmeks ümberistumiste arv ja viigi korral kaarte arv.
+  \item \textbf{Graaf} -- Tipud ja nende vahelised ühendused ehk kaared. Selles töös näeme graafi kui ühistranspordi võrgustikku, kus on peatused (tipud) ja ühendused (kaared).
+  \item \textbf{Suunatud graaf} -- Graaf, mille igal kaarel on suund: kaar A~$\to$~B tähendab, et peatusest A saab sõita peatusse B, kuid mitte vastupidi. Kui liin sõidab mõlemas suunas, on graafis kaks eraldi kaart: A~$\to$~B ja B~$\to$~A.
+  \item \textbf{Tipp (peatus)} -- Tipp märgib peatust. Päris elus on peatused mõlemal pool teed, kuid selles töös on üks tipp = üks peatus = näiteks ``Vabaduse väljak''.
+  \item \textbf{Kaar (ühendus)} -- Peatusest väljuv ühendus teise peatusse; 1 kaar = 1 liin = 1 buss, tramm või troll. Kaare infoväljas on liini tähis (nt ``1'', ``2'', ``3'') ning kahe peatuse vahel võib olla mitu eri liiniga kaart.
+  \item \textbf{Ümberistumine} (koodis loendab neid meetod \code{countTransfers}) -- Marsruudi kahel järjestikusel kaarel on erinev liini tähis, st sõitja peab vahepeatuses vahetama liini. Esimesele liinile minek marsruudi alguses ei ole ümberistumine.
+  \item \textbf{Olek} -- Paar (peatus, liin, millega sinna peatusesse jõuti). Sama peatus võib otsingus esineda mitmes olekus, kui sinna jõutakse eri liinidega.
 \end{itemize}
 
 % =====================================================================
