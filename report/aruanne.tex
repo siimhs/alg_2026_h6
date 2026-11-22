@@ -1,0 +1,368 @@
+% =====================================================================
+%  Kodutöö 6 aruanne -- Algoritmid ja andmestruktuurid (ICD0001)
+%  Kompileerimine: vt report/Makefile  (make  ->  aruanne.pdf)
+%
+%  Märkused:
+%   \todo{...}  -- punane märge kohtadesse, kuhu tuleb tekst kirjutada.
+%                 Enne esitamist: \renewcommand{\todo}[1]{} või kustuta.
+% =====================================================================
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ---------- Keel ja kodeering ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[estonian]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ---------- Lehekülje paigutus ----------
+\usepackage[a4paper,left=3cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}
+\usepackage{titlesec}
+\titleformat{\chapter}{\normalfont\LARGE\bfseries}{\thechapter.}{0.6em}{}
+\titlespacing*{\chapter}{0pt}{0pt}{1.2em}
+% Peatükk ei alga uuelt lehelt
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\chapter}{\if@openright\cleardoublepage\else\clearpage\fi}{\par\bigskip}{}{\PackageWarning{aruanne}{chapter patch failed}}
+\makeatother
+
+% ---------- Matemaatika, tabelid, joonised ----------
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs,tabularx,longtable}
+\usepackage{graphicx}
+\graphicspath{{img/}}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{xcolor}
+
+% ---------- Pseudokood ----------
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\floatname{algorithm}{Algoritm}
+\renewcommand{\listalgorithmname}{Algoritmide loetelu}
+\algrenewcommand\algorithmicrequire{\textbf{Sisend:}}
+\algrenewcommand\algorithmicensure{\textbf{Väljund:}}
+
+% ---------- Programmikood (hele taust!) ----------
+\usepackage{listings}
+\definecolor{kommentaar}{RGB}{0,110,0}
+\definecolor{votmesona}{RGB}{0,0,160}
+\definecolor{sone}{RGB}{160,0,0}
+\definecolor{taust}{RGB}{250,250,250}
+\lstset{
+  language=Java,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{votmesona}\bfseries,
+  commentstyle=\color{kommentaar},
+  stringstyle=\color{sone},
+  backgroundcolor=\color{taust},
+  frame=single, rulecolor=\color{black!30},
+  numbers=left, numberstyle=\tiny\color{black!50}, numbersep=6pt,
+  breaklines=true, breakatwhitespace=false,
+  showstringspaces=false, tabsize=3, columns=fullflexible, keepspaces=true,
+  inputencoding=utf8, extendedchars=true,
+  literate={õ}{{\~o}}1 {Õ}{{\~O}}1 {ä}{{\"a}}1 {Ä}{{\"A}}1
+           {ö}{{\"o}}1 {Ö}{{\"O}}1 {ü}{{\"u}}1 {Ü}{{\"U}}1
+           {š}{{\v s}}1 {Š}{{\v S}}1 {ž}{{\v z}}1 {Ž}{{\v Z}}1
+}
+\renewcommand{\lstlistingname}{Programmilõik}
+% Tekstisisesed koodikastid ei poolitu lehtede vahel (lisades \lstinputlisting poolitub)
+\BeforeBeginEnvironment{lstlisting}{\par\noindent\begin{minipage}{\linewidth}}
+\AfterEndEnvironment{lstlisting}{\end{minipage}\par}
+
+% ---------- Viited, lingid ----------
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+% ---------- Abikäsud ----------
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO:} #1\textbf{]}}}
+\newcommand{\code}[1]{\texttt{#1}}
+\theoremstyle{definition}
+\newtheorem{definitsioon}{Definitsioon}[chapter]
+\newtheorem{naide}{Näide}[chapter]
+\theoremstyle{plain}
+\newtheorem{vaide}{Väide}[chapter]
+
+% ---------- Metaandmed ----------
+\addto\captionsestonian{\renewcommand{\bibname}{Kasutatud allikad}}
+\newcommand{\autor}{Siim Haas}
+\newcommand{\pealkiri}{Vähimate ümberistumistega marsruudi leidmine ühistranspordivõrgus}
+\hypersetup{pdftitle={\pealkiri}, pdfauthor={\autor}}
+
+\begin{document}
+
+% =====================================================================
+%  TIITELLEHT
+% =====================================================================
+\pagenumbering{Alph}  % tiitellehe unikaalne ankur (hyperref)
+\input{tiitelleht}
+
+% =====================================================================
+%  SISUKORD
+% =====================================================================
+\pagenumbering{roman}
+\setcounter{page}{2}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+% =====================================================================
+%  SISSEJUHATUS
+% =====================================================================
+\chapter*{Sissejuhatus}
+\addcontentsline{toc}{chapter}{Sissejuhatus}
+
+Siinsest aruandest on võimalik mõista kuidas ühistranspordivõrgus marsruute leida, kus ümberistumisi on võimalikult vähe.
+Olen aruannet kirjutades mõelnud lugejale kes ei ole aine kursust läbinud.
+
+% =====================================================================
+%  1. ÜLESANDE PÜSTITUS
+% =====================================================================
+\chapter{Ülesande püstitus}
+\label{ch:pustitus}
+
+\section{Ülesande sõnastus}
+On antud suunatud graaf, mille tipud tähistavad peatusi ja kaared tähistavad ühendusi kahe peatuse vahel.
+Iga kaare infoväljas on liini tähis, mis seda ühendust teenindab (kahe peatuse vahel võib olla mitu kaart eri liinidega).
+Koostada meetod, mis leiab etteantud lähtepeatusest sihtpeatusesse marsruudi, kus liini vahetusi (ümberistumisi) on võimalikult vähe.
+Kui selliseid marsruute on mitu, valitakse neist kõige vähemate kaartega.
+Meetod tagastab marsruudi kaarte listina (List) läbimise järjekorras.
+Kui sihtpeatusesse ei saa jõuda, tagastatakse tühi list.
+Algset graafi ei muudeta.
+
+\section{Põhimõisted}
+\label{sec:moisted}
+Mõiste järel on toodud ingliskeelne termin ja nimi, millega sama asi programmikoodis esineb.
+
+\begin{itemize}
+  \item \textbf{Graaf} (koodis \code{Graph}) -- Tipud ja nende vahelised ühendused ehk kaared. Antud töös näeme graafi kui ühistranspordi võrgustikku kus on peatused (tipud) ja ühendused (kaared).
+  \item \textbf{Suunatud graaf} -- Suunatud graafis teame tipust olevaid ühendusi ja nende suunda (näiteks kas buss sõidab peatuse A-st peatuse B-sse või vastupidi).
+  \item \textbf{Tipp (peatus)} (koodis \code{Vertex}) -- Tipp märgib peatust. Päris elus on peatused mõlemal pool teed või on neid suuremas ristmikus rohkem (näiteks peatus ``Vabaduse väljak''). Antud töös on üks tipp = üks peatus = näiteks ``Vabaduse väljak''.
+  \item \textbf{Kaar (ühendus)} (koodis \code{Arc}) -- Peatusest väljuv ühendus teise peatusse. 1 kaar = 1 liin = 1 buss, tramm või troll. Kaare infoväljas on liini tähis (nt "1", "2", "3" jne).
+  \item \textbf{Liin (liini tähis)} (koodis kaare väli \code{line}) -- Kaares on viide liinile, mis seda ühendust teenindab. 1 kaar = 1 liin. Kahe peatuse vahel võib olla mitu eri liiniga kaart.
+  \item \textbf{Lähtepeatus} (koodis parameeter \code{from}) -- Sisend, kust marsruut algab.
+  \item \textbf{Sihtpeatus} (koodis parameeter \code{to}) -- Sisend, kuhu marsruut lõpeb.
+  \item \textbf{Marsruut} (koodis \code{List<Arc>}) -- Väljund, kaarte näol lähtepeatusest sihtpeatusesse.
+\end{itemize}
+
+% =====================================================================
+%  2. LAHENDUSE KIRJELDUS
+% =====================================================================
+\chapter{Lahenduse kirjeldus}
+\label{ch:lahendus}
+
+Ülesanne on lahendatud Java programmeerimiskeeles ühe klassina
+\code{GraphTask}, mille sees on abiklassid \code{Graph}, \code{Vertex} ja
+\code{Arc} (graaf, tipp ja kaar) ning otsingu jaoks vajalikud abiklassid.
+Lahendus ei ole pakendatud teegiks: selle kasutamiseks tuleb vajalikud
+klassid ja meetodid kopeerida oma projekti. Kasutamise juhend on
+jaotises~\ref{sec:kasutamine}.
+
+Ülesande püstituses soovitud otsing on realiseeritud klassi
+\code{GraphTask.Graph} meetodis \code{findFewestTransfersRoute}.
+
+\section{Otsingu tööpõhimõte}
+
+Otsingu idee on lihtne: liigume lähtepeatusest võrgus edasi nii, et
+järgmisena uurime alati seda kohta, kuhu oleme jõudnud kõige vähemate
+ümberistumistega (viigi korral kõige vähemate kaartega). Nii on esimene
+kord, kui jõuame sihtpeatuse uurimiseni, leitud parim marsruut.
+
+Ainult peatust meelde jätta ei piisa, oluline on ka see, millise liiniga
+peatusesse jõuti, sest sellest sõltub, kas järgmine sõit on ümberistumine.
+Näiteks võib peatusesse B jõuda liiniga 1 kahe kaarega ja liiniga 2 kolme
+kaarega. Kui B-st sõidab sihtpeatusesse edasi ainult liin 2, on parem
+pikem variant, sest siis ei pea ümber istuma. Seepärast peab otsing meeles
+paari \emph{(peatus, liin, millega sinna jõuti)}; koodis on see klass
+\code{State}.
+
+Otsingu sammud:
+\begin{enumerate}
+  \item Alguses on järjekorras ainult lähtepeatus: 0 ümberistumist ja
+        0 kaart. Esimesele liinile minek ei ole ümberistumine.
+  \item Võetakse järjekorrast olek, kuhu jõuti kõige vähemate
+        ümberistumistega, viigi korral kõige vähemate kaartega.
+  \item Kui see on sihtpeatus, on parim marsruut leitud.
+  \item Muul juhul vaadatakse läbi kõik sellest peatusest väljuvad kaared.
+        Kui kaare liin erineb liinist, millega peatusesse jõuti, lisandub
+        üks ümberistumine; kaarte arv suureneb alati ühe võrra. Kui
+        jõutakse olekusse, kus pole varem käidud, või jõutakse sinna
+        paremini kui varem, jäetakse meelde uus tulemus ja kaar, mida
+        mööda tuldi, ning olek lisatakse järjekorda.
+  \item Kui järjekord saab tühjaks ilma sihtpeatust leidmata, ei ole
+        sihtpeatusesse võimalik jõuda ja tagastatakse tühi list.
+  \item Leitud marsruut pannakse kokku, liikudes meelde jäetud kaarte
+        kaudu sihtpeatusest tagasi lähtepeatusesse ja pöörates saadud
+        listi ümber.
+\end{enumerate}
+
+Kõik abiandmed hoitakse meetodi sees olevates tabelites
+(\code{HashMap}), seega algset graafi ei muudeta.
+
+% =====================================================================
+%  3. PROGRAMMI KASUTAMISJUHEND
+% =====================================================================
+\chapter{Programmi kasutamisjuhend}
+\label{ch:juhend}
+
+\section{Nõuded keskkonnale}
+
+\begin{lstlisting}[language={},numbers=none,caption={Kasutatud tööriistade versioonid}]
+$ java -version
+openjdk version "25.0.5" 2026-10-20 LTS
+OpenJDK Runtime Environment Temurin-25.0.5+8 (build 25.0.5+8-LTS)
+OpenJDK 64-Bit Server VM Temurin-25.0.5+8 (build 25.0.5+8-LTS, mixed mode, sharing)
+
+$ javac -version
+javac 25.0.5
+\end{lstlisting}
+
+\begin{lstlisting}[language={},numbers=none,caption={Projekti struktuur}]
+h6/
+|-- src/main/java/GraphTask.java      programm
+|-- src/test/java/GraphTaskTest.java  JUnit testid
+|-- src/test/java/Aout.java           testide abiklass
+|-- lib/junit-4.13.2.jar              testiteegid
+|-- lib/hamcrest-core-1.3.jar
+`-- bin/                              kompileeritud klassid
+\end{lstlisting}
+
+\section{Kompileerimine ja käivitamine}
+\label{sec:kaivitamine}
+
+Käsud käivitatakse projekti juurkaustas (\code{h6/}). Kompileerimine ei
+trüki midagi, kui vigu pole. Programmi käivitamisel lahendatakse
+mitu näiteülesannet ja trükitakse iga näite kohta graaf ning leitud
+marsruut. Allpool on väljundist näidatud esimene
+näide ja viimane rida, ülejäänu on asendatud märgiga \code{[...]}.
+
+\begin{lstlisting}[language={},numbers=none,caption={Programmi kompileerimine ja käivitamine}]
+$ javac -encoding UTF-8 -d bin src/main/java/*.java
+$ java -cp bin GraphTask
+
+E1
+E -->
+D --> aD_E_3 (D->E, line 3)
+C --> aC_D_3 (C->D, line 3)
+B --> aB_E_2 (B->E, line 2)
+A --> aA_C_3 (A->C, line 3) aA_B_1 (A->B, line 1)
+
+Route A -> E: [aA_C_3, aC_D_3, aD_E_3], arcs: 3, transfers: 0
+[...]
+Large graph: 2500 stops, 8700 arcs, route of 5 arcs with 2 transfers found in 44 ms
+\end{lstlisting}
+
+Testid kompileeritakse koos kaustas \code{lib/} olevate teekidega. Kuna
+üks test käivitab ka meetodi \code{main}, trükitakse testide käigus sama
+väljund uuesti; see on allpool asendatud märgiga \code{[...]}.
+
+\begin{lstlisting}[language={},numbers=none,caption={Testide kompileerimine ja käivitamine}]
+$ javac -encoding UTF-8 -d bin -cp "lib/*:bin" src/test/java/*.java
+$ java -cp "bin:lib/*" org.junit.runner.JUnitCore GraphTaskTest
+JUnit version 4.13.2
+....
+[...]
+.......testLargeGraph: 15600 arcs, 38 arcs in route, 1 transfers, 47 ms
+..
+Time: 0.343
+
+OK (13 tests)
+\end{lstlisting}
+
+\section{Meetodi kasutamine oma programmis}
+\label{sec:kasutamine}
+
+Kõigepealt luuakse graaf, seejärel lisatakse sellele peatused
+(\code{createVertex}) ja peatuste vahelised ühendused (\code{createArc}).
+Ühenduse loomisel antakse kaare id (seda võib kasutada ka nimena,
+otsingus seda ei kasutata), lähtepeatus, sihtpeatus ja liini tähis. Seejärel kutsutakse välja meetod \code{findFewestTransfersRoute},
+millele antakse lähte- ja sihtpeatus. Meetod tagastab marsruudi kaarte
+listina; abimeetod \code{countTransfers} loendab marsruudi
+ümberistumised.
+
+Allolevas näites viib peatusest A peatusse C kaks teed: liiniga 1 läbi
+peatuse B või otse liiniga 2. Kumbki ei nõua ümberistumist, seega valitakse
+lühem: tagastatakse list \code{[aA\_C\_2]} ja ümberistumisi on 0.
+
+\begin{lstlisting}[caption={Näide meetodi \code{findFewestTransfersRoute} kasutamisest},label={lst:kasutus}]
+GraphTask.Graph g = new GraphTask().new Graph ("Linn");
+GraphTask.Vertex a = g.createVertex ("A");
+GraphTask.Vertex b = g.createVertex ("B");
+GraphTask.Vertex c = g.createVertex ("C");
+g.createArc ("aA_B_1", a, b, "1");   // liin 1: A -> B
+g.createArc ("aB_C_1", b, c, "1");   // liin 1: B -> C
+g.createArc ("aA_C_2", a, c, "2");   // liin 2: A -> C
+
+List<GraphTask.Arc> route = g.findFewestTransfersRoute (a, c);
+int transfers = GraphTask.countTransfers (route);   // 0
+\end{lstlisting}
+
+Kui sihtpeatusesse ei saa jõuda või lähte- ja sihtpeatus on sama peatus,
+tagastab meetod tühja listi. Kui lähte- või sihtpeatus on \code{null},
+visatakse erind \code{IllegalArgumentException}.
+
+% =====================================================================
+%  4. TESTIMISKAVA
+% =====================================================================
+\chapter{Testimiskava}
+\label{ch:testid}
+
+Programmi on testitud kahel viisil. Esiteks lahendab meetod
+\code{GraphTask.run()} programmi käivitamisel kuus näiteülesannet. Viie
+väikese näite puhul trükitakse graaf ja leitud marsruut, nii et tulemust
+saab käsitsi kontrollida; kuues näide lahendab ülesande suurel juhuslikul
+graafil ja mõõdab ainult otsingu aega. Teiseks on failis
+\code{GraphTaskTest.java} JUnit 4 automaattestid, mis võrdlevad leitud
+marsruuti oodatavaga ja annavad vea korral teada, milline juhtum
+ebaõnnestus. Üks neist testidest käivitab ka meetodi \code{main}, seega
+lahendatakse testide käigus ka kõik näiteülesanded.
+
+Testid katavad olukorrad, kus lühim marsruut nõuab ümberistumist, aga
+pikem mitte, kus võrdse ümberistumiste arvu korral otsustab kaarte arv,
+kus samade peatuste vahel on mitu eri liiniga kaart ning kus on oluline,
+millise liiniga vahepeatusesse jõuti. Lisaks kontrollitakse erijuhte
+(sihtpeatusesse ei saa jõuda, graafis pole ühtegi kaart, lähte- ja
+sihtpeatus on sama, \code{null}-argumendi korral visatakse erind
+\code{IllegalArgumentException}), seda, et otsing graafi ei muuda, ja
+tulemuste kokkulangevust kõiki võimalikke marsruute läbi vaatava otsinguga
+400 väikesel juhuslikul graafil; suurel graafil (näiteülesandes 2500 ja
+testis 3000 peatust) mõõdetakse otsingu aega.
+
+Kõik 13 JUnit testi lõpevad edukalt. Testide täielik kood on toodud
+lisas~\ref{app:testid}, kusjuures iga testi oodatav tulemus on kirjas
+testi kontrolllausetes (\code{assertEquals}, \code{assertTrue} jne).
+Testide kompileerimise ja käivitamise käsud on toodud
+jaotises~\ref{sec:kaivitamine}.
+
+% =====================================================================
+%  KOKKUVÕTE
+% =====================================================================
+\chapter*{Kokkuvõte}
+\addcontentsline{toc}{chapter}{Kokkuvõte}
+Koostasin töö käigus \code{findFewestTransfersRoute} meetodi, mis leiab ühistranspordivõrgus marsruudi, kus ümberistumisi on võimalikult vähe.
+Leian, et jätkutööna on vaja see pakendada, et võimaldada paremat kasutusele võttu.
+Samuti pean oluliseks jätkuks kujundada mõisted transpordivõrgustiku semantika järgi.
+Kokkuvõttes olen tööga rahul.
+
+% =====================================================================
+%  LISAD
+% =====================================================================
+\appendix
+\renewcommand{\thechapter}{\Alph{chapter}}
+\titleformat{\chapter}{\normalfont\LARGE\bfseries}{Lisa \thechapter.}{0.6em}{}
+
+\chapter{Programmi tekst}
+\label{app:kood}
+\lstinputlisting[caption={GraphTask.java}]{../src/main/java/GraphTask.java}
+
+\chapter{JUnit testid}
+\label{app:testid}
+\lstinputlisting[caption={GraphTaskTest.java}]{../src/test/java/GraphTaskTest.java}
+
+\end{document}
