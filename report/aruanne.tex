@@ -25,6 +25,8 @@
 \titlespacing*{\chapter}{0pt}{0pt}{1.2em}
 % Peatükk ei alga uuelt lehelt
 \usepackage{etoolbox}
+% Sisukorra numbrikast lisade jaoks: "Lisa A"
+\newcommand*{\lisanumberline}[1]{\makebox[4em][l]{Lisa~#1}}
 \makeatletter
 \patchcmd{\chapter}{\if@openright\cleardoublepage\else\clearpage\fi}{\par\bigskip}{}{\PackageWarning{aruanne}{chapter patch failed}}
 \makeatother
@@ -143,7 +145,6 @@ Algset graafi ei muudeta.
 
 \section{Põhimõisted}
 \label{sec:moisted}
-Mõiste järel on toodud ingliskeelne termin ja nimi, millega sama asi programmikoodis esineb.
 
 \begin{itemize}
   \item \textbf{Graaf} (koodis \code{Graph}) -- Tipud ja nende vahelised ühendused ehk kaared. Selles töös näeme graafi kui ühistranspordi võrgustikku, kus on peatused (tipud) ja ühendused (kaared).
@@ -362,6 +363,7 @@ terminite järgi.
 % =====================================================================
 %  KASUTATUD ALLIKAD
 % =====================================================================
+\clearpage
 \begin{thebibliography}{9}
 \addcontentsline{toc}{chapter}{\bibname}
 
@@ -378,6 +380,10 @@ Jaanus Pöial. Kodutöö 6 / Graaf. Aine ``Algoritmid ja andmestruktuurid''
 % =====================================================================
 \appendix
 \renewcommand{\thechapter}{\Alph{chapter}}
+% Lisad algavad uuelt lehelt (keha peatükkide jaoks on lehevahetus eemaldatud)
+\pretocmd{\chapter}{\clearpage}{}{\PackageWarning{aruanne}{appendix chapter patch failed}}
+% Sisukorras "Lisa A ..." -- \ref ja \thechapter jäävad muutmata
+\addtocontents{toc}{\protect\let\protect\numberline\protect\lisanumberline}
 \titleformat{\chapter}{\normalfont\LARGE\bfseries}{Lisa \thechapter.}{0.6em}{}
 
 \chapter{Programmi tekst}
